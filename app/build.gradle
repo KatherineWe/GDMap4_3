@@ -1,0 +1,31 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "24.0.0 rc2"
+
+    defaultConfig {
+        applicationId "com.example.administrator.gdmap4"
+        minSdkVersion 18
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:appcompat-v7:23.3.0'
+    compile files('libs/AMap_Location_V2.4.0_20160308.jar')
+    compile files('libs/AMap_2DMap_V2.8.1_20160202.jar')
+    compile 'com.google.android.gms:play-services-appindexing:8.1.0'
+    compile files('libs/AMap_Search_V3.2.1_20160308.jar.jar')
+    compile files('libs/android-support-v4.jar')
+}
