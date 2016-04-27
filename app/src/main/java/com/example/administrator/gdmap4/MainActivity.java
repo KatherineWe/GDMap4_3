@@ -20,6 +20,7 @@ import com.amap.api.maps2d.CameraUpdateFactory;
 import com.amap.api.maps2d.LocationSource;
 import com.amap.api.maps2d.MapView;
 import com.amap.api.maps2d.model.BitmapDescriptor;
+import com.amap.api.maps2d.model.CameraPosition;
 import com.amap.api.maps2d.model.LatLng;
 import com.amap.api.maps2d.model.Marker;
 import com.amap.api.maps2d.model.MarkerOptions;
@@ -38,31 +39,15 @@ import java.util.TimerTask;
 
 
 public class MainActivity extends AppCompatActivity implements LocationSource,
-        AMapLocationListener{
+        AMapLocationListener,AMap.OnCameraChangeListener {
 
     private MapView mapView;
     private AMap aMap;
 
-    private LocationSource.OnLocationChangedListener mListener;
+    private OnLocationChangedListener mListener;
     private AMapLocationClient mlocationClient;
     private AMapLocationClientOption mLocationOption;
-
-    private LocationListener locationListener;
-
     private Button locate_btn;
-
-    private MarkerOptions option=new MarkerOptions();
-
-    //private MarkerOptions markerOption;
-
-    //private Marker marker_c12=new Marker(markerOption);
-    private LatLng latLng_c12=new LatLng(113.400453,23.051629);
-    private Bitmap bitmap;
-    private BitmapDescriptor bitmapDescriptor;
-
-    private List<LatLng> latLngList_5points;
-
-
 
 
     @Override
@@ -71,8 +56,7 @@ public class MainActivity extends AppCompatActivity implements LocationSource,
         setContentView(R.layout.activity_main);
         mapView = (MapView) findViewById(R.id.gdmapview);
         locate_btn = (Button) findViewById(R.id.btn_locate);
-        Button btn = (Button) findViewById(R.id.btn_locate);
-        btn .setOnClickListener(new View.OnClickListener() {
+        locate_btn .setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 init();
             }
@@ -80,23 +64,7 @@ public class MainActivity extends AppCompatActivity implements LocationSource,
         mapView.onCreate(savedInstanceState);
 
         init();
-        handler.post(task);//立即调用
-
-//        option.position(new LatLng(113.400453,23.051629));
-//        option.icon(BitmapDescriptorFactory.defaultMarker());
-//        Marker marker_C12=aMap.addMarker(option);
-//        marker_C12.showInfoWindow();
-
-//        Marker marker = aMap.addMarker(new MarkerOptions()
-//                .position(new LatLng(113.400453,23.051629))
-//                .title("C12")
-//                .icon(BitmapDescriptorFactory
-//                        .defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
-//                .draggable(true));
-//        marker.showInfoWindow();
-
-        //latLngList_5points.set(0, new LatLng(113.400453, 23.051629));//c12
-        //latLngList_5points.set(1, new LatLng(113.403294, 23.051701));//二饭
+        //handler.post(task);//立即调用
 
     }
 
@@ -105,8 +73,6 @@ public class MainActivity extends AppCompatActivity implements LocationSource,
         if (aMap == null) {
             aMap = mapView.getMap();
             setUpMap();
-
-            //setUpMarkers(aMap,latLngList_5points);
         }
     }
 
@@ -130,49 +96,35 @@ public class MainActivity extends AppCompatActivity implements LocationSource,
         aMap.getUiSettings().setScaleControlsEnabled(true);//显示比例尺
         aMap.moveCamera(CameraUpdateFactory.zoomTo(aMap.getMaxZoomLevel()));//自动放大到当前最大比例尺
 
-        addMarkersToMap();
+        addMarkers();
+
+
 
     }
 
-    private void addMarkersToMap(){
-//        TextOptions textOptions = new TextOptions()
-//                .position(new LatLng(113.400453,23.051629))
-//                .text("Text")
-//                .fontColor(Color.BLACK)
-//                .backgroundColor(Color.BLUE)
-//                .fontSize(30)
-//                .rotate(20)
-//                .align(Text.ALIGN_CENTER_HORIZONTAL, Text.ALIGN_CENTER_VERTICAL)
-//                .zIndex(1.f)
-//                .typeface(Typeface.DEFAULT_BOLD);
-//        aMap.addText(textOptions);
+    private void addMarkers(){
 
         Marker marker = aMap.addMarker(
                 new MarkerOptions()
-                        .title("C5")
-
+                        .position(new LatLng(113.400453,23.051629))
+                        .title("C12")
                         .icon(
                                 BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)
                         )
                         .draggable(true)
         );
+        //"_location": "113.400453,23.051629",
+        //"_name": "华工大学城校区C12",
         marker.setRotateAngle(0);
-        marker.setPosition(new LatLng(113.401167,23.048243));
+
+        marker.setPosition(new LatLng(113.400453,23.051629));
+        marker.setPositionByPixels(100, 400);
+
+        marker.setIcon( BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+        marker.setVisible(true);
         marker.showInfoWindow();
 
     }
-
-    //设置定时循环执行任务
-    private Handler handler = new Handler();
-
-    private Runnable task =new Runnable() {
-        public void run() {
-            // TODOAuto-generated method stub
-            handler.postDelayed(this,2*1000);//设置延迟时间，此处是2秒
-            aMap.setMyLocationEnabled(true);
-        }
-    };
-
 
     /**
      * 方法必须重写
@@ -182,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements LocationSource,
         super.onResume();
         mapView.onResume();
         init();
-        handler.post(task);
+        //handler.post(task);
     }
 
     /**
@@ -216,7 +168,7 @@ public class MainActivity extends AppCompatActivity implements LocationSource,
     /**
      * 定位成功后回调函数
      */
-    //@Override
+    @Override
     public void onLocationChanged(AMapLocation amapLocation) {
         if (mListener != null && amapLocation != null) {
             if (amapLocation != null
@@ -227,6 +179,16 @@ public class MainActivity extends AppCompatActivity implements LocationSource,
                 Log.e("AmapErr",errText);
             }
         }
+    }
+
+    @Override
+    public void onCameraChange(CameraPosition cameraPosition){
+
+    }
+
+    @Override
+    public void onCameraChangeFinish(CameraPosition cameraPosition){
+        addMarkers();
     }
 
     /**
